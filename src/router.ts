@@ -9,7 +9,7 @@ router.use('/auth', AuthRouter.router);
 router.use('/users', UserRouter.router);
 
 router.get('/', (request: Request, response: Response) => {
-  response.json({ message: 'hello_world' });
+  response.json({ message: 'hello world' });
 });
 
 router.all('*', (request: Request, response: Response) => {
