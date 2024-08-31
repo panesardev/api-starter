@@ -1,6 +1,6 @@
-import { createServer } from "../src/server";
+require('dotenv').config();
 
-const server = createServer();
+import { server } from './src/server';
 
 export default server;
 

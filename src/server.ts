@@ -1,23 +1,22 @@
-import express, { Express } from 'express';
-import cors from 'cors';
+import 'reflect-metadata';
 import compression from 'compression';
-import { IndexRouter } from './routers/index.router';
-import { ProductsRouter } from './routers/products.router';
-import { logger } from './logger';
+import cors from 'cors';
+import express from 'express';
+import { AppDataSource } from './database';
+import { logger } from './middlewares/logger';
+import { router } from './router';
 
-require('dotenv').config();
+const server = express();
 
-export function createServer(): Express {
-  const server = express();
-  
-  server.use(compression());
-  server.use(cors());
-  server.use(express.json());
+server.use(compression());
+server.use(cors());
+server.use(express.json());
 
-  server.use(logger);
+server.use(logger());
 
-  server.use('/', IndexRouter.router);
-  server.use('/products', ProductsRouter.router);
+server.use('/api', router);
 
-  return server;
-}
+AppDataSource.initialize();
+
+export { server };
+
