@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { verify } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { ExtendedJwtPayload } from "../auth/auth.interface";
 
 export function isAuthenticated() {
@@ -13,7 +13,7 @@ export function isAuthenticated() {
     const token = authHeader.split(' ')[1];
   
     try {
-      const payload = verify(token, process.env.JWT_SECRET) as ExtendedJwtPayload;
+      const payload = jwt.verify(token, process.env.JWT_SECRET) as ExtendedJwtPayload;
       request.body.payload = payload;
       next();
     } 

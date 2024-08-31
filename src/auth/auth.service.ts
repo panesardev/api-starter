@@ -1,5 +1,5 @@
-import { compare, hash } from 'bcrypt';
-import { sign } from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { UserService } from '../domains/users/user.service';
 import { CreateAccountRequestBody, ExtendedJwtPayload, LoginRequestBody, TokenBody } from "./auth.interface";
 
@@ -8,13 +8,13 @@ export namespace AuthService {
     const exists = await UserService.findByEmail(body.email);
 
     if (exists) {
-      const doesPasswordMatch = await compare(body.password, exists.password);
+      const doesPasswordMatch = await bcrypt.compare(body.password, exists.password);
   
       if (doesPasswordMatch) {
         const payload: ExtendedJwtPayload = { userId: exists.id };
         const expiresIn = process.env.JWT_EXPIRY;
 
-        const token = sign(payload, process.env.JWT_SECRET, { expiresIn });
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
 
         return { token, expiresIn };
       }
@@ -30,7 +30,7 @@ export namespace AuthService {
       throw Error('user already exists');
     }
 
-    body.password = await hash(body.password, 10);
+    body.password = await bcrypt.hash(body.password, 10);
   
     const user = await UserService.create({
       email: body.email,
@@ -43,7 +43,7 @@ export namespace AuthService {
     const payload: ExtendedJwtPayload = { userId: user.id };
     const expiresIn = process.env.JWT_EXPIRY;
 
-    const token = sign(payload, process.env.JWT_SECRET, { expiresIn });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
 
     return { token, expiresIn };
   }
