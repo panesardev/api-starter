@@ -7,6 +7,13 @@
     "email": "panesar.pb08@gmail.com",
     "url": "https://panesar.dev"
   },
+  "keywords": [
+    "express",
+    "typeorm",
+    "postgresql",
+    "jwt",
+    "typescript"
+  ],
   "scripts": {
     "dev": "nodemon index.ts"
   },
