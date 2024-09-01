@@ -13,22 +13,22 @@ export function isAuthenticated() {
     const token = authHeader.split(' ')[1];
   
     try {
-      const payload = jwt.verify(token, process.env.JWT_SECRET) as ExtendedJwtPayload;
-      request.body.payload = payload;
+      request.body.decoded = jwt.verify(token, process.env.JWT_SECRET) as ExtendedJwtPayload;
+
       next();
     } 
     catch (e) {
       console.log('[ERROR] auth.middleware.ts: ', e.message);
-      response.status(403).json({ message: 'forbidden' });
+      response.status(401).json({ message: 'unauthorized' });
     }
   }
 }
 
 export function isOwner() {
   return (request: Request, response: Response, next: NextFunction) => {
-    const payload = request.body.payload as ExtendedJwtPayload;
+    const decoded = request.body.decoded as ExtendedJwtPayload;
     
-    if (payload && payload.userId === Number(request.params.id)) {
+    if (decoded && decoded.userId === Number(request.params.id)) {
       next();
     }
     else {

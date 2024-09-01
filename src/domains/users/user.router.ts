@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { isAuthenticated, isOwner } from "../../auth/auth.middleware";
-import { HttpResponse } from "../../interfaces/http.interface";
+import { HttpResponse } from "../../shared/interfaces/http.interface";
 import { User } from "./user.entity";
 import { UserService } from "./user.service";
 

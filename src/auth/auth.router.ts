@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
-import { CreateAccountRequestBody, LoginRequestBody, TokenBody } from "./auth.interface";
+import { CreateAccountRequestBody, LoginRequestBody, Token } from "./auth.interface";
 import { AuthService } from "./auth.service";
-import { HttpResponse } from "../interfaces/http.interface";
+import { HttpResponse } from "../shared/interfaces/http.interface";
 
 export namespace AuthRouter {
   export const router = Router();
@@ -9,8 +9,8 @@ export namespace AuthRouter {
   router.post('/login', async (request: Request, response: Response) => {
     const body = request.body as LoginRequestBody;
 
-    const tokenResponse: HttpResponse<TokenBody> = await AuthService.login(body)
-      .then(body => ({ payload: body, errored: false }) as HttpResponse<TokenBody>)
+    const tokenResponse: HttpResponse<Token> = await AuthService.login(body)
+      .then(body => ({ payload: body, errored: false }) as HttpResponse<Token>)
       .catch(e => ({ errored: true, message: e.message }));
 
     response.json(tokenResponse);
@@ -19,8 +19,8 @@ export namespace AuthRouter {
   router.post('/create-account', async (request: Request, response: Response) => {
     const body = request.body as CreateAccountRequestBody;
 
-    const tokenResponse: HttpResponse<TokenBody> = await AuthService.createAccount(body)
-      .then(body => ({ payload: body, errored: false }) as HttpResponse<TokenBody>)
+    const tokenResponse: HttpResponse<Token> = await AuthService.createAccount(body)
+      .then(body => ({ payload: body, errored: false }) as HttpResponse<Token>)
       .catch(e => ({ errored: true, message: e.message }));
 
     response.json(tokenResponse);

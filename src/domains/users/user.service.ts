@@ -9,9 +9,7 @@ export namespace UserService {
   }
   
   export async function findByEmail(email: string): Promise<User> {
-    const user = await UserRepository.findOneBy({ email });
-    if (user) delete user.password;
-    return user;
+    return await UserRepository.findOneBy({ email });
   }
 
   export async function findAll(): Promise<User[]> {

@@ -12,11 +12,7 @@ export interface CreateAccountRequestBody {
   password: string;
   confirmPassword: string;
 }
-
-export interface TokenBody {
-  token: string;
-  expiresIn: string;
-}
+export type Token = string; 
 
 export interface ExtendedJwtPayload extends JwtPayload {
   userId: User['id'];
