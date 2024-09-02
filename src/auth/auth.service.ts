@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserService } from '../domains/users/user.service';
 import { CreateAccountRequestBody, ExtendedJwtPayload, LoginRequestBody, Token } from "./auth.interface";
+import { JWT_EXPIRY, JWT_SECRET } from '../constants/env';
 
 export namespace AuthService {
   export async function login(body: LoginRequestBody): Promise<Token> {
@@ -12,9 +13,8 @@ export namespace AuthService {
   
       if (doesPasswordMatch) {
         const payload: ExtendedJwtPayload = { userId: exists.id };
-        const expiresIn = process.env.JWT_EXPIRY;
 
-        return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
+        return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRY });
       }
       else throw Error('password is incorrect');
     }
@@ -39,8 +39,7 @@ export namespace AuthService {
     });
 
     const payload: ExtendedJwtPayload = { userId: user.id };
-    const expiresIn = process.env.JWT_EXPIRY;
 
-    return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRY });
   }
 }

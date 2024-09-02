@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import { CreateAccountRequestBody, LoginRequestBody, Token } from "./auth.interface";
 import { AuthService } from "./auth.service";
 import { HttpResponse } from "../shared/interfaces/http.interface";
+import { BAD_REQUEST, OK } from "../constants/http-codes";
 
 export namespace AuthRouter {
   export const router = Router();
@@ -13,7 +14,9 @@ export namespace AuthRouter {
       .then(body => ({ payload: body, errored: false }) as HttpResponse<Token>)
       .catch(e => ({ errored: true, message: e.message }));
 
-    response.json(tokenResponse);
+    const status = tokenResponse.errored ? BAD_REQUEST : OK;
+    
+    response.status(status).json(tokenResponse);
   });
 
   router.post('/create-account', async (request: Request, response: Response) => {
@@ -23,6 +26,8 @@ export namespace AuthRouter {
       .then(body => ({ payload: body, errored: false }) as HttpResponse<Token>)
       .catch(e => ({ errored: true, message: e.message }));
 
-    response.json(tokenResponse);
+      const status = tokenResponse.errored ? BAD_REQUEST : OK;
+    
+      response.status(status).json(tokenResponse);
   });
 }

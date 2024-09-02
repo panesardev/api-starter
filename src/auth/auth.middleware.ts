@@ -1,13 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken';
 import { ExtendedJwtPayload } from "../auth/auth.interface";
+import { FORBIDDEN, UNAUTHORIZED } from "../constants/http-codes";
 
 export function isAuthenticated() {
   return (request: Request, response: Response, next: NextFunction) => {
     const authHeader = request.headers.authorization;
     
     if (!authHeader || !authHeader.startsWith('Bearer')) {
-      return response.status(401).json({ message: 'unauthorized' });
+      return response.status(UNAUTHORIZED).json({ message: 'unauthorized' });
     }
     
     const token = authHeader.split(' ')[1];
@@ -19,7 +20,7 @@ export function isAuthenticated() {
     } 
     catch (e) {
       console.log('[ERROR] auth.middleware.ts: ', e.message);
-      response.status(401).json({ message: 'unauthorized' });
+      response.status(UNAUTHORIZED).json({ message: 'unauthorized' });
     }
   }
 }
@@ -32,7 +33,7 @@ export function isOwner() {
       next();
     }
     else {
-      response.status(403).json({ message: 'forbidden' });
+      response.status(FORBIDDEN).json({ message: 'forbidden' });
     }
   } 
 }

@@ -3,6 +3,7 @@ import { isAuthenticated, isOwner } from "../../auth/auth.middleware";
 import { HttpResponse } from "../../shared/interfaces/http.interface";
 import { User } from "./user.entity";
 import { UserService } from "./user.service";
+import { OK } from "../../constants/http-codes";
 
 export namespace UserRouter {
   export const router = Router();
@@ -14,7 +15,7 @@ export namespace UserRouter {
       .then(user => ({ payload: user, errored: false }))
       .catch(e => ({ message: e.message, errored: true }));
 
-    response.json(userResponse);
+    response.status(OK).json(userResponse);
   });
   
   router.patch('/:id', isAuthenticated(), isOwner(), async (request: Request, response: Response) => {
@@ -24,7 +25,7 @@ export namespace UserRouter {
       .then(user => ({ payload: user, errored: false }))
       .catch(e => ({ message: e.message, errored: true }));
 
-    response.json(userResponse);
+    response.status(OK).json(userResponse);
   });
   
   router.delete('/:id', isAuthenticated, isOwner, async (request: Request, response: Response) => {
@@ -34,6 +35,6 @@ export namespace UserRouter {
       .then(() => ({ payload: true, errored: false }))
       .catch(e => ({ message: e.message, errored: true }));
 
-    response.json(deleteResponse);
+    response.status(OK).json(deleteResponse);
   });
 }
