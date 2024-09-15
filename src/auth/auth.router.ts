@@ -1,33 +1,35 @@
 import { Request, Response, Router } from "express";
-import { CreateAccountRequestBody, LoginRequestBody, Token } from "./auth.interface";
+import { HttpCode } from "../constants/http-codes";
+import { HttpResponse } from "../interfaces/http";
+import { Token } from "./auth.interface";
 import { AuthService } from "./auth.service";
-import { HttpResponse } from "../shared/interfaces/http.interface";
-import { BAD_REQUEST, OK } from "../constants/http-codes";
+import { validateCreateAccount, validateLogin } from "./auth.validation";
+import { defineAsyncHandler } from "../utilities/async-handler";
 
 export namespace AuthRouter {
   export const router = Router();
 
-  router.post('/login', async (request: Request, response: Response) => {
-    const body = request.body as LoginRequestBody;
+  router.post('/login', defineAsyncHandler(
+    async (request: Request, response: Response) => {
+      const body = validateLogin(request.body);
+  
+      const tokenResponse: HttpResponse<Token> = {
+        payload: await AuthService.login(body),
+      }
 
-    const tokenResponse: HttpResponse<Token> = await AuthService.login(body)
-      .then(body => ({ payload: body, errored: false }) as HttpResponse<Token>)
-      .catch(e => ({ errored: true, message: e.message }));
+      response.status(HttpCode.OK).json(tokenResponse);
+    },
+  ));
 
-    const status = tokenResponse.errored ? BAD_REQUEST : OK;
-    
-    response.status(status).json(tokenResponse);
-  });
-
-  router.post('/create-account', async (request: Request, response: Response) => {
-    const body = request.body as CreateAccountRequestBody;
-
-    const tokenResponse: HttpResponse<Token> = await AuthService.createAccount(body)
-      .then(body => ({ payload: body, errored: false }) as HttpResponse<Token>)
-      .catch(e => ({ errored: true, message: e.message }));
-
-      const status = tokenResponse.errored ? BAD_REQUEST : OK;
-    
-      response.status(status).json(tokenResponse);
-  });
+  router.post('/create-account', defineAsyncHandler(
+    async (request: Request, response: Response) => {
+      const body = validateCreateAccount(request.body);
+  
+      const tokenResponse: HttpResponse<Token> = {
+        payload: await AuthService.createAccount(body),
+      }
+      
+      response.status(HttpCode.OK).json(tokenResponse);
+    },
+  ));
 }

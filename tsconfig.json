@@ -10,7 +10,7 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
     "strict": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
   },
   "include": [
     "./api/*.ts",

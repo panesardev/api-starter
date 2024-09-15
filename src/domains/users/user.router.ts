@@ -1,40 +1,47 @@
 import { Request, Response, Router } from "express";
-import { isAuthenticated, isOwner } from "../../auth/auth.middleware";
-import { HttpResponse } from "../../shared/interfaces/http.interface";
 import { User } from "./user.entity";
 import { UserService } from "./user.service";
-import { OK } from "../../constants/http-codes";
+import { HttpCode } from "../../constants/http-codes";
+import { isAuthenticated, isOwner } from "../../auth/auth.middleware";
+import { HttpResponse } from "../../interfaces/http";
+import { defineAsyncHandler } from "../../utilities/async-handler";
 
 export namespace UserRouter {
   export const router = Router();
 
-  router.get('/:id', isAuthenticated(), isOwner(), async (request: Request, response: Response) => {
-    const id: User['id'] = Number(request.params.id);
-
-    const userResponse: HttpResponse<User> = await UserService.findById(id)
-      .then(user => ({ payload: user, errored: false }))
-      .catch(e => ({ message: e.message, errored: true }));
-
-    response.status(OK).json(userResponse);
-  });
+  router.get('/:id', isAuthenticated(), isOwner(), defineAsyncHandler(
+    async (request: Request, response: Response) => {
+      const id: number = Number(request.params.id);
   
-  router.patch('/:id', isAuthenticated(), isOwner(), async (request: Request, response: Response) => {
-    const user: User = request.body as User;
+      const userResponse: HttpResponse<User> = { 
+        payload: await UserService.findById(id),
+      };
 
-    const userResponse: HttpResponse<User> = await UserService.update(user)
-      .then(user => ({ payload: user, errored: false }))
-      .catch(e => ({ message: e.message, errored: true }));
-
-    response.status(OK).json(userResponse);
-  });
+      response.status(HttpCode.OK).json(userResponse);
+    },
+  ));
   
-  router.delete('/:id', isAuthenticated, isOwner, async (request: Request, response: Response) => {
-    const id: number = Number(request.params.id);
+  router.patch('/:id', isAuthenticated(), isOwner(), defineAsyncHandler(
+    async (request: Request, response: Response) => {
+      const user: User = request.body as User;
+  
+      const userResponse: HttpResponse<User> = {
+        payload: await UserService.update(user),
+      }
+  
+      response.json(userResponse);
+    },
+  ));
+  
+  router.delete('/:id', isAuthenticated(), isOwner(), defineAsyncHandler(
+    async (request: Request, response: Response) => {
+      const id: number = Number(request.params.id);
+  
+      const userResponse: HttpResponse<User> = { 
+        payload: await UserService.findById(id),
+      };
 
-    const deleteResponse: HttpResponse<boolean> = await UserService.remove(id)
-      .then(() => ({ payload: true, errored: false }))
-      .catch(e => ({ message: e.message, errored: true }));
-
-    response.status(OK).json(deleteResponse);
-  });
+      response.status(HttpCode.OK).json(userResponse);
+    },
+  ));
 }

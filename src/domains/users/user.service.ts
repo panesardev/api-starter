@@ -1,5 +1,7 @@
+import { UserRepository } from "../../config/db";
+import { HttpCode } from "../../constants/http-codes";
+import { HttpError } from "../../interfaces/http";
 import { User } from "./user.entity";
-import { UserRepository } from "./user.repository";
 
 export namespace UserService {
   export async function findById(id: User['id']): Promise<User> {
@@ -25,12 +27,12 @@ export namespace UserService {
   }
 
   export async function update(user: User): Promise<User> {
-    if (!user.id) throw Error('user id required');
+    if (!user.id) throw new HttpError(HttpCode.BAD_REQUEST, 'user id required');
     return await UserRepository.save(user);
   } 
   
   export async function remove(id: User['id']): Promise<void> {
-    if (!id) throw Error('user id required');
+    if (!id) throw new HttpError(HttpCode.BAD_REQUEST, 'user id required');
     await UserRepository.delete(id);
   }
 }

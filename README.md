@@ -1,11 +1,12 @@
 # Express api starter project
 
 ✅ Serverless Vercel api\
+✅ Scalable project structure\
 ✅ JWT based authentication\
 ✅ TypeOrm & PostgreSQL as database\
-✅ Scalable project structure\
-✅ Typescript support\
-✅ Customizable logger
+✅ Zod for validation\
+✅ Customizable logger\
+✅ Typescript support
 
 ## Scripts
 

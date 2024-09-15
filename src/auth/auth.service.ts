@@ -1,31 +1,35 @@
+import { JWT_EXPIRY, JWT_SECRET } from '../constants/env';
+import { HttpCode } from '../constants/http-codes';
+import { UserService } from '../domains/users/user.service';
+import { HttpError } from '../interfaces/http';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { UserService } from '../domains/users/user.service';
 import { CreateAccountRequestBody, ExtendedJwtPayload, LoginRequestBody, Token } from "./auth.interface";
-import { JWT_EXPIRY, JWT_SECRET } from '../constants/env';
 
 export namespace AuthService {
   export async function login(body: LoginRequestBody): Promise<Token> {
     const exists = await UserService.findByEmail(body.email);
 
-    if (exists) {
-      const doesPasswordMatch = await bcrypt.compare(body.password, exists.password);
-  
-      if (doesPasswordMatch) {
-        const payload: ExtendedJwtPayload = { userId: exists.id };
-
-        return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRY });
-      }
-      else throw Error('password is incorrect');
+    if (!exists) {
+      throw new HttpError(HttpCode.NOT_FOUND, 'user not found');
     }
-    else throw Error('user not found');
+
+    const doesPasswordMatch = await bcrypt.compare(body.password, exists.password);
+  
+    if (!doesPasswordMatch) {
+      throw new HttpError(HttpCode.BAD_REQUEST, 'password is incorrect');
+    }
+
+    const payload: ExtendedJwtPayload = { userId: exists.id };
+
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRY }); 
   }
 
   export async function createAccount(body: CreateAccountRequestBody): Promise<Token> {
     const exists = await UserService.findByEmail(body.email);
     
     if (exists) {
-      throw Error('user already exists');
+      throw new HttpError(HttpCode.BAD_REQUEST, 'user already exists');
     }
 
     body.password = await bcrypt.hash(body.password, 10);

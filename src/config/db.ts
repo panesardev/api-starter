@@ -1,6 +1,6 @@
 import { DataSource } from "typeorm";
-import { User } from "./domains/users/user.entity";
-import { POSTGRES_URL } from "./constants/env";
+import { User } from "../domains/users/user.entity";
+import { POSTGRES_URL } from "../constants/env";
 
 export const AppDataSource = new DataSource({
   synchronize: true,
@@ -11,3 +11,5 @@ export const AppDataSource = new DataSource({
     User,
   ],
 });
+
+export const UserRepository = AppDataSource.getRepository(User);
